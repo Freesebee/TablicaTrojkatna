@@ -14,7 +14,7 @@ namespace TablicaTrojkatna
     
     {
         private XSSFWorkbook workbook;
-        private ISheet sheetIn, sheetOut;
+        private ISheet sheetIn, sheetTrojkatna, sheetFullTrojkatna;
         private List<string> stateList;
         private List<string> argList;
         List<List<List<Vector2>>> statesValuesList;
@@ -28,21 +28,31 @@ namespace TablicaTrojkatna
             
             stateList = GetTitleRowsList();
             argList = GetTitleColumnsList();
-            statesValuesList = getTriangleValues();
+            statesValuesList = getTriangleValues(false);
 
             try
             {
+                workbook.RemoveSheetAt(3); 
                 workbook.RemoveSheetAt(2);
             }
             catch (Exception)
             {
+                Console.WriteLine("Brak arkuszy do zastapienia");
             }
 
-            sheetOut = workbook.CreateSheet("Trojkatna");
+            sheetTrojkatna = workbook.CreateSheet("Trojkatna");
+            sheetFullTrojkatna = workbook.CreateSheet("FullTrojkatna");
 
-            BuildTriangleCells();
-            BuildTriangleTitles();
-            BuildTriangleValues();
+            BuildTriangleCells(sheetTrojkatna);
+            BuildTriangleTitles(sheetTrojkatna);
+            BuildTriangleValues(sheetTrojkatna);
+
+            statesValuesList = getTriangleValues(true);
+
+            BuildTriangleCells(sheetFullTrojkatna);
+            BuildTriangleTitles(sheetFullTrojkatna);
+            BuildTriangleValues(sheetFullTrojkatna);
+
         }
         private string getStringFromCell(ICell cell)
         {
@@ -115,29 +125,29 @@ namespace TablicaTrojkatna
             }
             return colTitleList;
         }
-        private void BuildTriangleCells()
+        private void BuildTriangleCells(ISheet sheet)
         {
             for (int i = 0; i < stateList.Count; i++)
             {
-                sheetOut.CreateRow(i);
+                sheet.CreateRow(i);
                 for (int j = 0; j < stateList.Count; j++)
                 {
-                    sheetOut.GetRow(i).CreateCell(j);
+                    sheet.GetRow(i).CreateCell(j);
                 }
             }
         }
-        private  void BuildTriangleTitles()
+        private  void BuildTriangleTitles(ISheet sheet)
         {
             for (int i = 0; i < stateList.Count-1; i++)
             {
-                sheetOut.GetRow(i + 1).GetCell(0).SetCellValue(stateList[i]);
+                sheet.GetRow(i + 1).GetCell(0).SetCellValue(stateList[i]);
             }
             for (int i = 1; i <= stateList.Count-1; i++)
             {
-                sheetOut.GetRow(0).GetCell(i).SetCellValue(stateList[i]);
+                sheet.GetRow(0).GetCell(i).SetCellValue(stateList[i]);
             }
         }
-        private  List<List<List<Vector2>>> getTriangleValues()
+        private  List<List<List<Vector2>>> getTriangleValues(bool fullMinimization)
         {
             List<List<List<Vector2>>> stateValuesList = new List<List<List<Vector2>>>();
             if (stateList.Count >= 2)
@@ -148,15 +158,15 @@ namespace TablicaTrojkatna
 
                     for (int c = w + 1; c < stateList.Count; c++)
                     {
-                        stateValuesList[w].Add(checkStates(w, c));
+                        stateValuesList[w].Add(checkStates(w, c, fullMinimization));
                     }
                 }
             }
             return stateValuesList;
         }
-        private  void BuildTriangleValues()
+        private  void BuildTriangleValues(ISheet sheet)
         {
-            int cell_index = 0;
+            int cell_index;
             foreach (List<List<Vector2>> row in statesValuesList)
             {
                 cell_index = 0;
@@ -183,7 +193,7 @@ namespace TablicaTrojkatna
                     {
                         content = "X";
                     }
-                    sheetOut.GetRow(1 + statesValuesList.IndexOf(row))
+                    sheet.GetRow(1 + statesValuesList.IndexOf(row))
                         .GetCell(1 + cell_index + statesValuesList.IndexOf(row))
                         .SetCellValue(content);
 
@@ -191,7 +201,7 @@ namespace TablicaTrojkatna
                 }
             }
         }
-        private List<Vector2> checkStates(int stateWindex, int stateCindex)
+        private List<Vector2> checkStates(int stateWindex, int stateCindex, bool fullMinimization)
         {
             List<Vector2> cellContent = new List<Vector2>();
 
@@ -235,46 +245,34 @@ namespace TablicaTrojkatna
                         || cellC_ArgString == cellW_ArgString
                         )
                     {
-                        //statesValuesList[stateWindex][stateCindex - (stateWindex + 1)]
-                        //    .Add(new Vector2(-1, -1));
                         cellContent.Add(new Vector2(-1, -1));
                     }
                     else
                     {
-                        //statesValuesList[stateWindex][stateCindex - (stateWindex + 1)]
-                        //    .Add(new Vector2(
-                        //    getIndexFromStringContent(getStringFromCell(cellWarg)),
-                        //    getIndexFromStringContent(getStringFromCell(cellCarg))
-                        //        ));
-                        
-                        //List<Vector2> innerStatesList
-                        //    = checkStates(getIndexFromStringContent(cellW_ArgString),
-                        //    getIndexFromStringContent(cellC_ArgString));
-                        
-                        //if(checkForCompatibleStates(innerStatesList))
-                        cellContent.Add(new Vector2(getIndexFromStringContent(cellW_ArgString),
+                        if (!fullMinimization)
+                        {
+                            cellContent.Add(new Vector2(getIndexFromStringContent(cellW_ArgString),
                             getIndexFromStringContent(cellC_ArgString)
                                 ));
+                        }
+                        else
+                        {
+                            foreach (Vector2 vector in checkStates(getIndexFromStringContent(cellW_ArgString),
+                                getIndexFromStringContent(cellC_ArgString),
+                                fullMinimization))
+                            {
+                                if(vector.X != -1 || vector.Y != -1)
+                                {
+                                    cellContent.Add(new Vector2(-1, -1));
+                                    
+                                }
+                            }
+                            return new List<Vector2>();
+                        }
                     }
-
                 }
             }
             return cellContent;
-        }
-        private bool checkForCompatibleStates(List<Vector2> vectorList)
-        {
-            if(vectorList.Count == 0)
-            {
-                return false;
-            }
-            foreach (Vector2 v in vectorList)
-            {
-                if(v.X != -1 || v.Y != -1)
-                {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }
