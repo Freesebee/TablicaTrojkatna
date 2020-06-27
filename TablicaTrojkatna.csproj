@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Excel\**" />
+    <EmbeddedResource Remove="Excel\**" />
+    <None Remove="Excel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="MinimalizacjaStanow.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MinimalizacjaStanow.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NPOI" Version="2.5.1" />
+  </ItemGroup>
+
+</Project>
