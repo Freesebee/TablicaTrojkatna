@@ -11,12 +11,13 @@ namespace TablicaTrojkatna
         static void Main(string[] args)
         {
 
-            string bufor = "MinimalizacjaStanow.xlsx";
+            string nameIn = "TablicaStanowDoMinimalizacji.xlsx",
+                nameOut = "ZminimalizowanaTablicaStanow.xlsx";
             FileStream streamIn = null;
             FileStream streamOut = null;
             try
             {
-                streamIn = new FileStream(AppDomain.CurrentDomain.BaseDirectory + bufor, FileMode.Open, FileAccess.Read);
+                streamIn = new FileStream(AppDomain.CurrentDomain.BaseDirectory + nameIn, FileMode.Open, FileAccess.Read);
 
                 XSSFWorkbook document = new XSSFWorkbook(streamIn);
 
@@ -24,7 +25,7 @@ namespace TablicaTrojkatna
 
                 MinimalizationCreator triangle = new MinimalizationCreator(document);
 
-                streamOut = new FileStream(AppDomain.CurrentDomain.BaseDirectory + bufor,
+                streamOut = new FileStream(AppDomain.CurrentDomain.BaseDirectory + nameOut,
                 FileMode.Append, FileAccess.Write);
 
                 document.Write(streamOut);

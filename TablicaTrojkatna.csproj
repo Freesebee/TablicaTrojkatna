@@ -13,10 +13,11 @@
 
   <ItemGroup>
     <None Remove="MinimalizacjaStanow.xlsx" />
+    <None Remove="TablicaStanowDoMinimalizacji.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="MinimalizacjaStanow.xlsx">
+    <Content Include="TablicaStanowDoMinimalizacji.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
