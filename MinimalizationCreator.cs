@@ -29,7 +29,7 @@ namespace TablicaTrojkatna
             
             stateList = GetTitleRowsList();
             argList = GetTitleColumnsList();
-            statesValuesList = getTriangleValues(false);
+            statesValuesList = getTriangleValues(0);
             maxInvocations = 
                 RecursiveFactorial(stateList.Count) 
                 / (2 * RecursiveFactorial(stateList.Count -2));
@@ -52,7 +52,7 @@ namespace TablicaTrojkatna
             BuildTriangleValues(sheetTrojkatna);
             Console.WriteLine("Pomyslnie utworzono arkusz Trojkatna");
             
-            statesValuesList = getTriangleValues(true);
+            statesValuesList = getTriangleValues(1);
 
             BuildTriangleCells(sheetFullTrojkatna);
             BuildTriangleTitles(sheetFullTrojkatna);
@@ -152,7 +152,7 @@ namespace TablicaTrojkatna
                 sheet.GetRow(0).GetCell(i).SetCellValue(stateList[i]);
             }
         }
-        private  List<List<List<Vector2>>> getTriangleValues(bool fullMinimization)
+        private  List<List<List<Vector2>>> getTriangleValues(int invocation)
         {
             List<List<List<Vector2>>> stateValuesList = new List<List<List<Vector2>>>();
             if (stateList.Count >= 2)
@@ -163,7 +163,7 @@ namespace TablicaTrojkatna
 
                     for (int c = w + 1; c < stateList.Count; c++)
                     {
-                        stateValuesList[w].Add(checkStates(w, c, 1));
+                        stateValuesList[w].Add(checkStates(w, c, invocation));
                     }
                 }
             }
