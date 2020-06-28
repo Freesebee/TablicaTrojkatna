@@ -18,6 +18,7 @@ namespace TablicaTrojkatna
         private List<string> stateList;
         private List<string> argList;
         List<List<List<Vector2>>> statesValuesList;
+        private int maxInvocations;
         private Vector2 yValueCellFirstIndex = new Vector2(1, 1);
         private Vector2 argValueCellFirstIndex = new Vector2(1, 2);
 
@@ -29,6 +30,9 @@ namespace TablicaTrojkatna
             stateList = GetTitleRowsList();
             argList = GetTitleColumnsList();
             statesValuesList = getTriangleValues(false);
+            maxInvocations = 
+                RecursiveFactorial(stateList.Count) 
+                / (2 * RecursiveFactorial(stateList.Count -2));
 
             try
             {
@@ -159,7 +163,7 @@ namespace TablicaTrojkatna
 
                     for (int c = w + 1; c < stateList.Count; c++)
                     {
-                        stateValuesList[w].Add(checkStates(w, c, fullMinimization));
+                        stateValuesList[w].Add(checkStates(w, c, 1));
                     }
                 }
             }
@@ -202,7 +206,7 @@ namespace TablicaTrojkatna
                 }
             }
         }
-        private List<Vector2> checkStates(int stateWindex, int stateCindex, bool fullMinimization)
+        private List<Vector2> checkStates(int stateWindex, int stateCindex, int invocation)
         {
             List<Vector2> cellContent = new List<Vector2>();
 
@@ -250,7 +254,7 @@ namespace TablicaTrojkatna
                     }
                     else
                     {
-                        if (!fullMinimization)
+                        if (invocation == 0)
                         {
                             cellContent.Add(new Vector2(getIndexFromStringContent(cellW_ArgString),
                             getIndexFromStringContent(cellC_ArgString)
@@ -258,22 +262,40 @@ namespace TablicaTrojkatna
                         }
                         else
                         {
-                            foreach (Vector2 vector in checkStates(getIndexFromStringContent(cellW_ArgString),
-                                getIndexFromStringContent(cellC_ArgString),
-                                fullMinimization))
+                            if(invocation < maxInvocations)
                             {
-                                if(vector.X != -1 || vector.Y != -1)
+                                foreach (Vector2 vector in checkStates(getIndexFromStringContent(cellW_ArgString),
+                                                                getIndexFromStringContent(cellC_ArgString),
+                                                                ++invocation))
                                 {
-                                    cellContent.Add(new Vector2(-1, -1));
-                                    
+                                    if (vector.X != -1 || vector.Y != -1)
+                                    {
+                                        cellContent.Add(new Vector2(-1, -1));
+
+                                    }
                                 }
+                                return new List<Vector2>();
                             }
-                            return new List<Vector2>();
+                            else
+                            {
+                                cellContent.Add(new Vector2(-1, -1));
+                            }
                         }
                     }
                 }
             }
             return cellContent;
+        }
+        int RecursiveFactorial(int number)
+        {
+            if (number == 1)
+            {
+                return 1;
+            }
+            else
+            {
+                return number * RecursiveFactorial(number - 1);
+            }
         }
     }
 }
