@@ -46,13 +46,14 @@ namespace TablicaTrojkatna
             BuildTriangleCells(sheetTrojkatna);
             BuildTriangleTitles(sheetTrojkatna);
             BuildTriangleValues(sheetTrojkatna);
-
+            Console.WriteLine("Pomyslnie utworzono arkusz Trojkatna");
+            
             statesValuesList = getTriangleValues(true);
 
             BuildTriangleCells(sheetFullTrojkatna);
             BuildTriangleTitles(sheetFullTrojkatna);
             BuildTriangleValues(sheetFullTrojkatna);
-
+            Console.WriteLine("Pomyslnie utworzono arkusz FullTrojkatna");
         }
         private string getStringFromCell(ICell cell)
         {
