@@ -77,7 +77,7 @@ namespace TablicaTrojkatna
                     return stateList.IndexOf(item);
                 }
             }
-            throw new Exception("NIE MA TAKIEGO STANU");
+            throw new Exception("Jedna z komórek zawiera nieistniejacy stan");
         }
         private List<string> GetTitleRowsList()
         {

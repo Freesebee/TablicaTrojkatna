@@ -39,6 +39,8 @@ namespace TablicaTrojkatna
             {
                 streamIn.Close();
                 streamOut.Close();
+                Console.WriteLine("Nacisnij dowolny przycisk aby kontynuowac");
+                Console.ReadKey();
             }
         }
     }
